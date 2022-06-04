@@ -1,0 +1,4 @@
+//Change the SSID & Password according to that of the WiFi you are using
+//Change the API key, Field ID & Channel ID-For these create a ThingSpeak account from MathWorks,create new channel with the required fields you want to use in your code,then save.Click on API to generate the API key to be used in the project
+and the channel ID is available at the top of the graphical display.
+//To use other GPIO pins of the NodeMCU or Arduino change the pin numbers as required.
