@@ -1,4 +1,4 @@
-//Tempareture & Humidity measurment with DHT11 Sensor (TechStudyCell)
+//Tempareture & Humidity measurment with DHT11 Sensor
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -7,12 +7,17 @@
 #include <DHT.h>
 #include <DHT_U.h>
 
+#include <Adafruit_BMP085.h>    
+#define seaLevelPressure_hPa 1013.25  
+
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+Adafruit_BMP085 bmp;
 
 #define DHTPIN 2     // Digital pin connected to the DHT sensor 
 // Feather HUZZAH ESP8266 note: use pins 3, 4, 5, 12, 13 or 14 --
@@ -41,6 +46,10 @@ void setup() {
   // Set delay between sensor readings based on sensor details.
   //delayMS = sensor.min_delay / 1000;
   delayMS = 1000;
+  if (!bmp.begin()) {   
+  Serial.println("Could not find a valid BMP085 sensor, check wiring!");    
+  while (1) {}      
+  }
 }
 
 void loop() {
@@ -61,10 +70,10 @@ void loop() {
     display.setCursor(5,2);
     display.print("Temperature: ");
     display.print(event.temperature);
-    display.print(" C");
+    display.print(" °C");
     display.println();     
     display.display();
-     
+    delay(500);
   }
   display.drawLine(0,15, display.width()-1,15, WHITE);
   
@@ -83,8 +92,20 @@ void loop() {
     display.print(event.relative_humidity);
     display.print(" %");     
     display.display();
-     
+    delay(500);
   }
 
   display.clearDisplay();
+  Serial.print("Pressure: ");    
+  Serial.print(bmp.readPressure()); 
+  Serial.println(" Pa");  
+  display.setCursor(15,22);     
+  display.print("Pressure: ");    
+  display.print(bmp.readPressure());  
+  display.print(" Pa ");     
+  display.display();  
+  Serial.println();      
+  //delay(500);     
+  display.clearDisplay();
+  delay(500);     
 }
