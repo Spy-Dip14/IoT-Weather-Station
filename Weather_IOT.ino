@@ -1,11 +1,14 @@
 #include <ThingSpeak.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
+#include <Adafruit_BMP085.h>
+Adafruit_BMP085 bmp;
 
 int t;
 int h;
 //int p;
-double T,P,p0,a;
+int p0;
+double T,P,a;
 
 //----------------------------------------Include the NodeMCU ESP8266 Library
 //----------------------------------------see here: https://www.youtube.com/watch?v=8jMr94B8iN0 to add NodeMCU ESP12E ESP8266 library and board (ESP8266 Core SDK)
@@ -58,12 +61,17 @@ void setup()
   
   //delay(500);
   pressure.begin();
-  delay(500);
+  //delay(500);
   WiFi.mode(WIFI_STA);
   ThingSpeak.begin(client);
    pinMode(ON_Board_LED,OUTPUT); //--> On Board LED port Direction output
   digitalWrite(ON_Board_LED, HIGH); //--> Turn off Led On 
   
+  if(!bmp.begin())
+   {
+     Serial.println("Could not find a valid BMP085 sensor,check wiring!");
+    while(1){}
+   }
   
 }
 void loop()
@@ -108,50 +116,56 @@ void measure()
   Serial.print(h);
   Serial.print(" %");
 
-char status;
+//char status;
           //double T,P,p0,a;
-          status = pressure.startTemperature();
-          if (status != 0)
-          {
-            delay(status);
-            status = pressure.getTemperature(T);
-            if (status != 0)
-            {
+          //status = pressure.startTemperature();
+          //if (status != 0)
+          //{
+            //delay(status);
+            //status = pressure.getTemperature(T);
+            //if (status != 0)
+            //{
              
-              status = pressure.startPressure(3);
-              if (status != 0)
-              {
+             // status = pressure.startPressure(3);
+             // if (status != 0)
+             // {
                 // Wait for the measurement to complete:
-                delay(status);
+               // delay(status);
         
-                status = pressure.getPressure(P,T);
-                if (status != 0)
-                {
+                //status = pressure.getPressure(P,T);
+               // if (status != 0)
+                //{
          
-                  p0 = pressure.sealevel(P,ALTITUDE); // we're at 1655 meters (Boulder, CO)
-                  a = pressure.altitude(P,p0);
-                }
-                else Serial.println("error retrieving pressure measurement\n");
-              }
-              else Serial.println("error starting pressure measurement\n");
-            }
-            else Serial.println("error retrieving temperature measurement\n");
-          }
+                  //p0 = pressure.sealevel(P,ALTITUDE); // we're at 1655 meters (Boulder, CO)
+                  //a = pressure.altitude(P,p0);
+                //}
+                //else Serial.println("error retrieving pressure measurement\n");
+             // }
+              //else Serial.println("error starting pressure measurement\n");
+            //}
+           // else Serial.println("error retrieving temperature measurement\n");
+          //}
           
           //p0 = pressure.sealevel(P,ALTITUDE); // we're at 1655 meters (Boulder, CO)
+          p0=bmp.readPressure();
           Serial.println();
-          Serial.print("Relative (sea-level) Pressure: ");
-          Serial.print(p0,2);
-          Serial.print(" mb, ");
-          Serial.print(p0*0.0295333727,2);
-          Serial.print(" inHg");
-          Serial.println();//
-          Serial.print("Altitude: ");
-          Serial.print(a);
-          Serial.print("m");
+          //Serial.print("Relative (sea-level) Pressure: ");
+          //Serial.print(p0,2);
+          //Serial.print(" mb, ");
+          //Serial.print(p0*0.0295333727,2);
+          //Serial.print(" inHg");
+          //Serial.println();//
+          //Serial.print("Altitude: ");
+          //Serial.print(a);
+          //Serial.print("m");
+          Serial.print("Pressure: ");
+          Serial.print(p0);
+          Serial.print(" Pa");
 
+          Serial.println();
+          delay(500);
 
-  delay(5000);  // Pause for 5 seconds.
+ // delay(5000);  // Pause for 5 seconds.
 }
 
 void internet()
