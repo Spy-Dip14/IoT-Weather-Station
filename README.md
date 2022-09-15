@@ -1,2 +1,2 @@
 # IoT-Weather-Station
-------Smart Weather Monitoring at Home
+------Smart Weather Monitoring from anywhere around the Globe
